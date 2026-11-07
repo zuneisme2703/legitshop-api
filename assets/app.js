@@ -4,6 +4,7 @@
 const CFG = window.LS_CONFIG || {};
 const API = String(CFG.API_BASE || '').replace(/\/+$/, '');
 const QPC = CFG.QUOTA_PER_CREDIT || 100000;
+const SETUP = String(CFG.SETUP_BASE || CFG.API_BASE || '').replace(/\/+$/, '');
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -347,7 +348,7 @@ function renderSetup(){
   const fO = opus || sonnet || haiku || any, fS = sonnet || opus || haiku || any, fH = haiku || sonnet || opus || any;
   const with1m = id => ids.includes(id + '[1m]') ? id + '[1m]' : id;
   const cfg = {env: {
-      ANTHROPIC_AUTH_TOKEN: k || 'YOUR_TOKEN', ANTHROPIC_BASE_URL: API,
+      ANTHROPIC_AUTH_TOKEN: k || 'YOUR_TOKEN', ANTHROPIC_BASE_URL: SETUP,
       ANTHROPIC_DEFAULT_OPUS_MODEL: with1m(fO), ANTHROPIC_DEFAULT_SONNET_MODEL: with1m(fS), ANTHROPIC_DEFAULT_HAIKU_MODEL: fH,
       CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1', CLAUDE_CODE_MAX_OUTPUT_TOKENS: '32000'},
     model: opus ? 'opus' : sonnet ? 'sonnet' : haiku ? 'haiku' : any};
@@ -355,10 +356,10 @@ function renderSetup(){
   const pv = JSON.parse(raw.cfgClaude); if (k) pv.env.ANTHROPIC_AUTH_TOKEN = 'sk-••••••••';
   $('cfgClaude').innerHTML = hl(JSON.stringify(pv, null, 2));
   const cx = pick(ids, /^gpt-/) || pick(ids, /codex/) || fO;
-  raw.cfgCodex = ['model = "' + cx + '"', 'model_provider = "' + CFG.CODEX_PROVIDER + '"', '', '[model_providers.' + CFG.CODEX_PROVIDER + ']', 'name = "LegitShop API"', 'base_url = "' + API + '/v1"', 'env_key = "' + CFG.CODEX_ENV_KEY + '"', 'wire_api = "responses"'].join('\n');
+  raw.cfgCodex = ['model = "' + cx + '"', 'model_provider = "' + CFG.CODEX_PROVIDER + '"', '', '[model_providers.' + CFG.CODEX_PROVIDER + ']', 'name = "LegitShop API"', 'base_url = "' + SETUP + '/v1"', 'env_key = "' + CFG.CODEX_ENV_KEY + '"', 'wire_api = "responses"'].join('\n');
   $('cfgCodex').textContent = raw.cfgCodex;
   $('codexEnv').textContent = CFG.CODEX_ENV_KEY + '=' + (k ? 'sk-••••••••' : 'YOUR_TOKEN');
-  const curl = m => 'curl ' + API + '/v1/chat/completions \\\n  -H "Authorization: Bearer ' + m + '" \\\n  -H "Content-Type: application/json" \\\n  -d \'{"model":"' + fS + '","messages":[{"role":"user","content":"Xin chào"}]}\'';
+  const curl = m => 'curl ' + SETUP + '/v1/chat/completions \\\n  -H "Authorization: Bearer ' + m + '" \\\n  -H "Content-Type: application/json" \\\n  -d \'{"model":"' + fS + '","messages":[{"role":"user","content":"Xin chào"}]}\'';
   raw.cfgCurl = curl(k || 'YOUR_TOKEN');
   $('cfgCurl').textContent = curl(k ? 'sk-••••••••' : 'YOUR_TOKEN');
 }
@@ -490,7 +491,7 @@ function setTheme(dark){
 
 function init(){
   $('yr').textContent = new Date().getFullYear();
-  $('baseUrl').textContent = API; $('oaiUrl').textContent = API + '/v1';
+  $('baseUrl').textContent = SETUP; $('oaiUrl').textContent = SETUP + '/v1';
   setTheme(document.documentElement.classList.contains('dark'));
   $('themeBtn').onclick = () => setTheme(!document.documentElement.classList.contains('dark'));
   document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => selectTab(b.dataset.tab));
