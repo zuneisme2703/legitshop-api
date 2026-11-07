@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="340 215 595 680" role="img" aria-label="LegitShop">
+  <defs>
+    <linearGradient id="lsb" x1="353" y1="225" x2="740" y2="800" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00B7FF"/>
+      <stop offset="1" stop-color="#0A5BE6"/>
+    </linearGradient>
+    <linearGradient id="lsb2" x1="561" y1="299" x2="921" y2="533" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00B7FF"/>
+      <stop offset="0.55" stop-color="#0A7AF0"/>
+      <stop offset="1" stop-color="#0A5BE6"/>
+    </linearGradient>
+    <linearGradient id="lsg" x1="561" y1="477" x2="921" y2="750" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#A6EB23"/>
+      <stop offset="1" stop-color="#5FB80F"/>
+    </linearGradient>
+  </defs>
+  <polygon points="353,310 498,225 498,630 657,717 527,796 353,705" fill="url(#lsb)"/>
+  <polygon points="498,630 657,717 527,796 498,778" fill="#0A5BE6" opacity="0.55"/>
+  <polygon points="353,310 498,225 498,630 353,705" fill="#003FB8" opacity="0.12"/>
+  <polygon points="561,405 739,299 921,405 921,533 739,432 561,531" fill="url(#lsb2)"/>
+  <polygon points="739,432 921,533 921,405 830,352" fill="#0A3FD0" opacity="0.45"/>
+  <polygon points="561,531 658,477 921,627 921,750 800,690" fill="url(#lsg)"/>
+  <polygon points="582,818 800,690 921,750 700,882" fill="url(#lsg)"/>
+  <polygon points="800,690 921,627 921,750" fill="#3E8F08" opacity="0.55"/>
+</svg>

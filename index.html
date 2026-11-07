@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LegitShop API Console</title>
+  <meta name="description" content="LegitShop API — nhập key để xem số dư, lịch sử request và cách cài đặt.">
+  <link rel="icon" href="assets/logo-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Chakra+Petch:wght@700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>try{if(localStorage.getItem('ls-theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}</script>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-row">
+      <a class="brand" href="./" aria-label="LegitShop API">
+        <img src="assets/logo-mark.svg" alt="" class="brand-mark">
+        <span class="brand-text"><span class="b-legit">Legit</span><span class="b-shop">Shop</span><span class="b-api">API</span></span>
+      </a>
+      <p class="tagline">LegitShop Gateway · nhập key để xem số dư &amp; lịch sử</p>
+      <div class="top-actions">
+        <span class="live" id="liveTag"><i></i><span id="liveTxt">Chưa kết nối</span></span>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Đổi sáng / tối"><span aria-hidden="true">◐</span><span class="hide-sm" id="themeTxt">Tối</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="keybox card">
+      <form id="keyForm" autocomplete="off">
+        <label for="key" class="lbl">API Key của bạn</label>
+        <div class="keyrow">
+          <input id="key" type="password" spellcheck="false" placeholder="sk-..." aria-describedby="keyHint">
+          <button class="btn icon-only" type="button" id="eyeBtn" aria-label="Hiện / ẩn key">👁</button>
+          <button class="btn primary" type="submit">Kiểm tra</button>
+          <button class="btn ghost" type="button" id="clearBtn">Xóa</button>
+        </div>
+        <div class="keyopts">
+          <label class="chk"><input type="checkbox" id="remember"> Nhớ key trên máy này</label>
+          <button class="linkbtn" type="button" id="demoBtn">Xem dữ liệu mẫu</button>
+          <span class="muted" id="keyHint">Key chỉ gửi thẳng tới máy chủ API, trang này không lưu lại.</span>
+        </div>
+      </form>
+    </section>
+
+    <div class="promo" id="promo" hidden></div>
+    <div class="alert danger" id="err" role="alert" hidden></div>
+
+    <nav class="tabs" role="tablist" aria-label="Mục">
+      <button role="tab" data-tab="test" id="t-test">Thử key</button>
+      <button role="tab" data-tab="overview" id="t-overview" aria-selected="true">Số dư &amp; hoạt động</button>
+      <button role="tab" data-tab="setup" id="t-setup">Cài đặt API Key</button>
+      <button role="tab" data-tab="faq" id="t-faq">Lỗi thường gặp</button>
+      <button role="tab" data-tab="world" id="t-world">Toàn cầu</button>
+    </nav>
+
+    <!-- ============ SỐ DƯ & HOẠT ĐỘNG ============ -->
+    <section class="panel" id="p-overview" role="tabpanel" aria-labelledby="t-overview">
+      <div class="card hero">
+        <div class="hero-deco" aria-hidden="true"><i class="d1"></i><i class="d2"></i></div>
+        <div class="hero-head">
+          <span class="eyebrow">Số dư khả dụng</span>
+          <span class="pill" id="heroTag">—</span>
+        </div>
+        <div class="hero-bal"><span id="heroBal">—</span> <span class="unit">Credit</span></div>
+        <div class="muted" id="heroSub">Nhập key để xem số dư</div>
+        <div class="bar"><i id="heroBar" style="width:0"></i></div>
+        <div class="hero-foot"><span id="heroLeft">—</span><span id="heroTotal">—</span></div>
+        <div class="expiry"><span>Hạn dùng</span> <b id="expLeft">—</b> <span class="muted" id="expAt"></span></div>
+      </div>
+
+      <div class="minis">
+        <div class="card mini"><span class="mlbl">Token hôm nay</span><b id="mTok">—</b><span class="msub" id="mTokSub">&nbsp;</span></div>
+        <div class="card mini"><span class="mlbl">Đã tiêu hôm nay</span><b id="mCr">—</b><span class="msub" id="mCrSub">&nbsp;</span></div>
+        <div class="card mini"><span class="mlbl">Request hôm nay</span><b id="mReq">—</b><span class="msub" id="mReqSub">&nbsp;</span></div>
+        <div class="card mini"><span class="mlbl">Tốc độ TB</span><b id="mSpd">—</b><span class="msub" id="mSpdSub">&nbsp;</span></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="chead"><h2>◐ Phân bổ model</h2><span class="meta" id="splitMeta">—</span></div>
+          <div class="totals" id="splitTotals"></div>
+          <div id="splitBody" class="split"></div>
+        </div>
+        <div class="card">
+          <div class="chead"><h2>★ Kỷ lục cá nhân</h2><span class="meta" id="recMeta">—</span></div>
+          <div class="records" id="records"></div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="chead"><h2>⏱ Nhịp hoạt động 24 giờ</h2><span class="meta" id="actMeta">—</span></div>
+          <div class="bars" id="actBars"></div>
+          <div class="axis"><span>-24h</span><span>-18h</span><span>-12h</span><span>-6h</span><span>bây giờ</span></div>
+          <p class="note" id="actNote"></p>
+        </div>
+        <div class="card">
+          <div class="chead"><h2 id="d14Title">14 ngày qua</h2><span class="meta" id="d14Meta">—</span></div>
+          <div class="bars days" id="d14Bars"></div>
+          <div class="axis" id="d14Axis"></div>
+          <div class="d14stats" id="d14Stats"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chead"><h2>Lịch sử request</h2><span class="meta" id="logMeta">—</span></div>
+        <div class="tblwrap">
+          <table class="tbl">
+            <thead><tr><th>Thời gian</th><th>Model</th><th class="num">Vào</th><th class="num">Cache</th><th class="num">Ra</th><th class="num">Credit</th><th>Trạng thái</th></tr></thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <span id="pgInfo" class="muted"></span>
+          <label class="muted">Mỗi trang
+            <select id="pgSize"><option>25</option><option selected>50</option><option>100</option><option>250</option></select>
+          </label>
+          <span class="pgbtns">
+            <button class="btn sm" id="pgFirst" aria-label="Trang đầu">«</button>
+            <button class="btn sm" id="pgPrev" aria-label="Trang trước">‹</button>
+            <span id="pgPos" class="muted"></span>
+            <button class="btn sm" id="pgNext" aria-label="Trang sau">›</button>
+            <button class="btn sm" id="pgLast" aria-label="Trang cuối">»</button>
+          </span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chead"><h2>Model khả dụng</h2><span class="meta" id="stMeta">—</span></div>
+        <div class="stsum" id="stSum"></div>
+        <p class="note">Bấm thẻ để chép ID model.</p>
+        <div id="stGroups"></div>
+      </div>
+    </section>
+
+    <!-- ============ THỬ KEY ============ -->
+    <section class="panel" id="p-test" role="tabpanel" aria-labelledby="t-test" hidden>
+      <div class="card">
+        <div class="chead"><h2>Thử key với một model</h2><span class="meta">Mỗi lần thử sẽ trừ một ít Credit</span></div>
+        <form id="testForm" class="testform">
+          <label class="lbl" for="testModel">Model</label>
+          <select id="testModel"><option value="">Nhập key để tải danh sách model</option></select>
+          <label class="lbl" for="testMsg">Câu hỏi</label>
+          <textarea id="testMsg" rows="3">Chào bạn, trả lời ngắn: bạn là model nào?</textarea>
+          <div><button class="btn primary" type="submit" id="testBtn">Gửi thử</button></div>
+        </form>
+        <div class="testout" id="testOut" hidden>
+          <div class="testmeta" id="testMeta"></div>
+          <pre id="testText"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CÀI ĐẶT ============ -->
+    <section class="panel" id="p-setup" role="tabpanel" aria-labelledby="t-setup" hidden>
+      <div class="card">
+        <div class="chead"><h2>Địa chỉ API</h2></div>
+        <div class="kv">
+          <div><span>Base URL (Anthropic / Claude Code)</span><code class="copy" id="baseUrl"></code></div>
+          <div><span>Base URL (OpenAI tương thích)</span><code class="copy" id="oaiUrl"></code></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="chead"><h2>Claude Code · ~/.claude/settings.json</h2><button class="btn sm" data-copy="cfgClaude">Chép</button></div>
+        <pre class="code" id="cfgClaude"></pre>
+        <p class="note">Model trong cấu hình được chọn theo danh sách model key của bạn được phép dùng.</p>
+      </div>
+      <div class="card">
+        <div class="chead"><h2>Codex CLI · ~/.codex/config.toml</h2><button class="btn sm" data-copy="cfgCodex">Chép</button></div>
+        <pre class="code" id="cfgCodex"></pre>
+        <p class="note">Đặt biến môi trường: <code id="codexEnv"></code></p>
+      </div>
+      <div class="card">
+        <div class="chead"><h2>Gọi thử bằng curl</h2><button class="btn sm" data-copy="cfgCurl">Chép</button></div>
+        <pre class="code" id="cfgCurl"></pre>
+      </div>
+      <div class="card">
+        <div class="chead"><h2>Bảng giá theo model</h2><span class="meta" id="priceMeta">—</span></div>
+        <div class="tblwrap">
+          <table class="tbl">
+            <thead><tr><th>Model</th><th class="num">Credit / 1M token vào</th><th class="num">Credit / 1M token ra</th><th class="num">Token nhận được với số dư</th></tr></thead>
+            <tbody id="priceBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ LỖI THƯỜNG GẶP ============ -->
+    <section class="panel" id="p-faq" role="tabpanel" aria-labelledby="t-faq" hidden>
+      <div class="card faq" id="faqList"></div>
+    </section>
+
+    <!-- ============ TOÀN CẦU ============ -->
+    <section class="panel" id="p-world" role="tabpanel" aria-labelledby="t-world" hidden>
+      <div class="minis">
+        <div class="card mini"><span class="mlbl">Request / phút</span><b id="wRpm">—</b><span class="msub" id="wRpmSub">&nbsp;</span></div>
+        <div class="card mini"><span class="mlbl">Request hôm nay</span><b id="wReq">—</b><span class="msub" id="wReqSub">&nbsp;</span></div>
+        <div class="card mini"><span class="mlbl">Token hôm nay</span><b id="wTok">—</b><span class="msub" id="wTokSub">&nbsp;</span></div>
+        <div class="card mini"><span class="mlbl">Model nóng nhất</span><b id="wHot" class="sm">—</b><span class="msub" id="wHotSub">&nbsp;</span></div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="chead"><h2>Quốc gia hoạt động</h2><span class="meta" id="wCtyMeta">—</span></div>
+          <div id="wCty" class="split"></div>
+        </div>
+        <div class="card">
+          <div class="chead"><h2>Request gần nhất</h2><span class="meta" id="wEvMeta">—</span></div>
+          <div id="wEvents" class="events"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span>© <span id="yr"></span> LegitShop API</span>
+      <span class="muted" id="updatedTxt"></span>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="assets/config.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
