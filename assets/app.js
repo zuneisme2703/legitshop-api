@@ -122,8 +122,20 @@ async function refresh(){
   }
 }
 
+/* Trạng thái model, bảng giá, khuyến mãi, số liệu toàn cầu: tải khi mở trang và mỗi lần khách bấm Kiểm tra. */
+function loadPublic(){
+  return Promise.all([pub('/key/status.json', 'status.json'), pub('/api/pricing', 'pricing.json'), pub('/key/promo-config.json', 'promo-config.json'), pub('/key/feed.json', 'feed.json')])
+    .then(([s, p, pr, f]) => {
+      // Lần tải lỗi thì giữ dữ liệu cũ, không xóa trắng bảng.
+      statusData = s || statusData; pricing = p || pricing; feed = f || feed;
+      if (pr) renderPromo(pr);
+      renderStatus(); renderPricing(); renderSetup(); renderWorld();
+    });
+}
+
 function startKey(){
   demo = false;
+  loadPublic();
   usage = null; logs = []; keyModels = null; page = 0;
   try { if ($('remember').checked) localStorage.setItem('ls-key', keyVal()); else localStorage.removeItem('ls-key'); } catch(_) {}
   clearInterval(timer);
@@ -512,17 +524,9 @@ function init(){
   $('testForm').onsubmit = runTest;
   renderFaq(); renderAll();
 
-  const loadPublic = () => Promise.all([pub('/key/status.json', 'status.json'), pub('/api/pricing', 'pricing.json'), pub('/key/promo-config.json', 'promo-config.json'), pub('/key/feed.json', 'feed.json')])
-    .then(([s, p, pr, f]) => {
-      // Lần tải lỗi thì giữ dữ liệu cũ, không xóa trắng bảng.
-      statusData = s || statusData; pricing = p || pricing; feed = f || feed;
-      if (pr) renderPromo(pr);
-      renderStatus(); renderPricing(); renderSetup(); renderWorld();
-    });
   loadPublic();
-  if (CFG.PUBLIC_REFRESH_SEC) setInterval(() => { if (!document.hidden) loadPublic(); }, CFG.PUBLIC_REFRESH_SEC * 1000);
-  // Quay lại tab sau khi để ẩn lâu thì tải lại ngay.
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) { loadPublic(); if (!demo && keyVal() && usage) refresh(); } });
+  // Quay lại tab sau khi để ẩn lâu thì làm mới số dư ngay (bảng giá / trạng thái chỉ tải lại khi bấm Kiểm tra).
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && !demo && keyVal() && usage) refresh(); });
 
   const qk = new URLSearchParams(location.hash.slice(1)).get('key');
   let saved = ''; try { saved = localStorage.getItem('ls-key') || ''; } catch(_) {}
