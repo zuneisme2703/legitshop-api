@@ -15,3 +15,5 @@ for f in key/status.json key/feed.json key/promo-config.json api/pricing; do
     rm -f "$out.tmp"; echo "lỗi $f (giữ bản cũ nếu có)"
   fi
 done
+# Không có bản trạng thái model nào thì báo lỗi để thấy ngay trong tab Actions.
+[ -s "$DIR/status.json" ] && [ -s "$DIR/pricing.json" ] || { echo "Không tải được dữ liệu công khai"; exit 1; }
