@@ -4,9 +4,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-  # Làm mới trạng thái model / bảng giá / khuyến mãi (GitHub có thể chạy trễ vài phút).
+  # Làm mới trạng thái model / bảng giá / khuyến mãi. 5 phút là mức ngắn nhất GitHub cho phép,
+  # và lúc đông GitHub thường chạy trễ hơn lịch.
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/5 * * * *"
 
 permissions:
   contents: read

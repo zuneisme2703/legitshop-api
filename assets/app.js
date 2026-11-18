@@ -512,8 +512,17 @@ function init(){
   $('testForm').onsubmit = runTest;
   renderFaq(); renderAll();
 
-  Promise.all([pub('/key/status.json', 'status.json'), pub('/api/pricing', 'pricing.json'), pub('/key/promo-config.json', 'promo-config.json'), pub('/key/feed.json', 'feed.json')])
-    .then(([s, p, pr, f]) => { statusData = s; pricing = p; feed = f; renderPromo(pr); renderStatus(); renderPricing(); renderSetup(); renderWorld(); });
+  const loadPublic = () => Promise.all([pub('/key/status.json', 'status.json'), pub('/api/pricing', 'pricing.json'), pub('/key/promo-config.json', 'promo-config.json'), pub('/key/feed.json', 'feed.json')])
+    .then(([s, p, pr, f]) => {
+      // Lần tải lỗi thì giữ dữ liệu cũ, không xóa trắng bảng.
+      statusData = s || statusData; pricing = p || pricing; feed = f || feed;
+      if (pr) renderPromo(pr);
+      renderStatus(); renderPricing(); renderSetup(); renderWorld();
+    });
+  loadPublic();
+  if (CFG.PUBLIC_REFRESH_SEC) setInterval(() => { if (!document.hidden) loadPublic(); }, CFG.PUBLIC_REFRESH_SEC * 1000);
+  // Quay lại tab sau khi để ẩn lâu thì tải lại ngay.
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { loadPublic(); if (!demo && keyVal() && usage) refresh(); } });
 
   const qk = new URLSearchParams(location.hash.slice(1)).get('key');
   let saved = ''; try { saved = localStorage.getItem('ls-key') || ''; } catch(_) {}

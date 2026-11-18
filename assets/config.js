@@ -10,5 +10,7 @@ window.LS_CONFIG = {
   CODEX_PROVIDER: 'legitshop',
   CODEX_ENV_KEY: 'LEGITSHOP_API_KEY',
   // Tự làm mới số liệu (giây). 0 = tắt.
-  REFRESH_SEC: 30
+  REFRESH_SEC: 30,
+  // Tải lại trạng thái model / bảng giá / khuyến mãi / số liệu toàn cầu (giây). 0 = tắt.
+  PUBLIC_REFRESH_SEC: 120
 };
